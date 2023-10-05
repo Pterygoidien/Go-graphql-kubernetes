@@ -1,0 +1,18 @@
+version: "1"
+packages:
+  - path: "sqlc"
+    name: "sqlc"
+    engine: "postgresql"
+    schema: "schema.sql"
+    queries: "sql-queries"
+overrides:
+  - column: "projects_ranked.score"
+    go_type: float64
+  - column: "projects_ranked.last_change"
+    go_type:
+      import: "database/sql"
+      type: "NullTime"
+  - column: "projects_ranked.last_update_timestamp"
+    go_type:
+      import: "database/sql"
+      type: "NullTime"

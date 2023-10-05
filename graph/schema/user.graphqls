@@ -1,0 +1,24 @@
+directive @isLoggedIn on FIELD_DEFINITION
+type User {
+  id: ID!
+  username: String
+  """name is the real name of the user"""
+  name: String
+  email: String
+  participations: [Project!]
+  createdProjects: [Project!]
+  description: String!
+  profileImage: String
+}
+
+extend type Query {
+  me: User! @isLoggedIn
+  meIfLoggedIn: User
+  getUserByUsername(username: String!): User
+}
+extend type Mutation {
+  setMyUsername(username: String!): Boolean!
+  setMyName(name: String): Boolean!
+  setMyDescription(description: String!): Boolean!
+  setMyProfileImage(profileImage: String): Boolean!
+}

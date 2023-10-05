@@ -1,0 +1,100 @@
+type Image {
+  id: ID!
+  url: String!
+  createdAt: Time!
+  description: String
+  priority: Float!
+}
+input NewImageInput {
+  url: String!
+  description: String
+  priority: Float
+}
+
+type Project {
+  id: ID!
+  name: String!
+  description: String!
+  languages: [String!]!
+  location: Location
+  participants: [User!]!
+  creator: User!
+  images: [Image!]!
+  createdAt: Time
+  lastUpdated: Time
+  # if the current user saved this project
+  saved: Boolean!
+  tags: [String!]!
+  public: Boolean!
+}
+
+type ProjectMutation {
+  addParticipant(id: ID!): Boolean!
+  removeParticipant(id: ID!): Boolean!
+  deleteProject: Boolean!
+  updateDescription(newDescription: String!): Boolean!
+  updateName(newName: String!): Boolean!
+  addImage(newImage: NewImageInput!): Boolean!
+  removeImage(id: ID!): Boolean!
+  updateImageDescription(id: ID!, newDescription: String): Boolean!
+  updateImagePriority(id: ID!, newPriority: Float!): Boolean!
+  addTag(tag: String!): Boolean!
+  removeTag(tag: String!): Boolean!
+  updateLocation(newLocation: LocationInput!): Boolean!
+  setVisibility(visibility: Boolean!): Boolean!
+}
+
+type Location {
+  name: String!
+  coordinates: Coordinate
+}
+
+type Coordinate {
+  latitude: Float!
+  longitude: Float!
+}
+
+input SearchOptions {
+  filters: [String!]
+  tag: String
+}
+
+type Tag {
+  name: String!
+  count: Int!
+}
+
+extend type Query {
+  searchProjects(
+    searchString: String!
+    options: SearchOptions! = {}
+    offset: Int! = 0
+    countLimit: Int! = 20
+  ): [Project!]!
+  getProject(id: ID!): Project
+  savedProjects: [Project!] @isLoggedIn
+  availableTags(limit: Int! = 4, offset: Int! = 0): [Tag!]!
+}
+
+input LocationInput {
+  name: String!
+  coordinates: CoordinateInput
+}
+input CoordinateInput {
+  latitude: Float!
+  longitude: Float!
+}
+
+input NewProjectInput {
+  name: String!
+  description: String!
+  languages: [String!]!
+  location: LocationInput
+}
+extend type Mutation {
+  createProject(project: NewProjectInput): Project! @isLoggedIn
+  # add Project to list of saved projects, return updated list
+  addSavedProject(id: ID!): Boolean! @isLoggedIn
+  removeSavedProject(id: ID!): Boolean! @isLoggedIn
+  projectMutation(id: ID!): ProjectMutation @isLoggedIn
+}

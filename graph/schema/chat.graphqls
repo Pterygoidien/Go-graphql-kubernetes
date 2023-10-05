@@ -1,0 +1,53 @@
+enum MessageAuthor {
+  P1
+  P2
+}
+
+"""
+either a user or a project
+"""
+type ChatParticipant {
+  user: User
+  project: Project
+}
+type Message {
+  author: MessageAuthor!
+  content: String!
+  time: Time!
+}
+
+type Chat {
+  """
+  first participant in the chat
+  """
+  p1: ChatParticipant!
+  """
+  second participant in the chat
+  """
+  p2: ChatParticipant!
+  """
+  me if logged in user is part of the chat (as user or project owner), null otherwise
+  """
+  me: MessageAuthor!
+  messages(until: Time, count: Int! = 20): [Message!]!
+}
+
+extend type Query {
+  chats: [Chat!] @isLoggedIn
+  getChatByUsername(withUsername: String!): Chat @isLoggedIn
+  getChatByUserId(withUserId: ID!): Chat @isLoggedIn
+  getChatByProjectId(withProjectId: ID!): Chat @isLoggedIn
+}
+extend type Mutation {
+  writeMessageToUser(userId: ID!, content: String!): Boolean! @isLoggedIn
+  writeMessageToProject(projectId: ID!, content: String!): Boolean! @isLoggedIn
+}
+extend type ProjectMutation {
+  writeMessageToUser(userId: ID!, content: String!): Boolean!
+}
+extend type Project {
+  chats: [Chat!] @isLoggedIn
+  getChatByUserId(withUserId: ID!): Chat @isLoggedIn
+}
+
+scalar Time

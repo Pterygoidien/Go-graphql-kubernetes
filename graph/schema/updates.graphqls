@@ -1,0 +1,16 @@
+type Update {
+  id: ID!
+  content: String!
+  origin: String!
+  images: [String!]!
+  time: Time!
+}
+extend type Project {
+  updates(until: Time, count: Int! = 20): [Update!]!
+  twitterUpdateSource: String
+}
+extend type ProjectMutation {
+  createUpdate(content: String!, images: [String!]!): Boolean!
+  deleteUpdate(id: ID!): Boolean!
+  setTwitterUpdateSource(username: String): Boolean!
+}
